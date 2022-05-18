@@ -1,0 +1,684 @@
+<!--Saved by Quest 5.8.6836.13983-->
+<asl version="580">
+  <include ref="English.aslx" />
+  <include ref="Core.aslx" />
+  <game name="Tegrat">
+    <inherit name="devmode" />
+    <gameid>689a10c8-5d6a-4799-8c0e-eb3ef69c766c</gameid>
+    <version>1.0</version>
+    <firstpublished>2021</firstpublished>
+    <author type="string"></author>
+    <attr name="feature_devmode" type="boolean">false</attr>
+    <showmoney type="boolean">false</showmoney>
+    <statusattributes type="stringdictionary" />
+    <start type="script">
+      moneylocation1 = false
+    </start>
+    <roomenter type="script">
+      firsttime {
+      }
+      otherwise {
+        play sound ("footstep.mp3", false, false)
+      }
+    </roomenter>
+  </game>
+  <object name="Break Room">
+    <inherit name="editor_room" />
+    <description>The room is rather small.</description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <prefix>the</prefix>
+    <firstenter type="script">
+    </firstenter>
+    <beforefirstenter type="script">
+      msg ("You are a retail worker in the year of 2043. One week ago, a wizard named Tegrat travelled to your dimension and took over your retail chain store location. You and your colleagues work tirelessly night and day to make this evil being money.")
+      msg ("Your coworker Stacy bursts through the door to the break room. \"Hey, uh, I never really knew you, we're usually on different shifts, but Mr Scotts said that he heard about a switch that will return Tegrat to his dimension! You should talk to him about resisting Tegrat!\"")
+    </beforefirstenter>
+    <beforeenter type="script">
+      stop sound
+      firsttime {
+        player.money = 1
+      }
+      otherwise {
+      }
+    </beforeenter>
+    <enter type="script">
+    </enter>
+    <object name="player">
+      <inherit name="editor_object" />
+      <inherit name="editor_player" />
+      <statusattributes type="stringdictionary">
+        <item>
+          <key>money</key>
+          <value>!</value>
+        </item>
+      </statusattributes>
+    </object>
+    <exit alias="west" to="Back Hallway">
+      <inherit name="westdirection" />
+      <runscript type="boolean">false</runscript>
+      <script type="script">
+        play sound ("371014__theshuggie__echoing-footsteps-down-hallway.wav", false, false)
+        MoveObject (player, break room)
+      </script>
+    </exit>
+    <object name="Stacy">
+      <inherit name="editor_object" />
+      <inherit name="namedfemale" />
+      <gender>she</gender>
+      <article>her</article>
+      <possessive>hers</possessive>
+      <look>She's eating her lunch now.</look>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+    </object>
+    <object name="map">
+      <inherit name="editor_object" />
+      <take />
+      <drop type="boolean">false</drop>
+      <look><![CDATA[You look at the map.<br/>{img:temp_map.png}]]></look>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Use</value>
+      </inventoryverbs>
+    </object>
+    <object name="vending machine">
+      <inherit name="editor_object" />
+      <feature_usegive />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Use</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Use</value>
+      </inventoryverbs>
+      <use type="script"><![CDATA[
+        loop = 1
+        if (ListCount(GetDirectChildren (storage)) = 0) {
+          msg ("It's empty.")
+          loop = 0
+        }
+        if (player.money >= 1) {
+          while (loop = 1) {
+            result = (DiceRoll ("d3"))
+            switch (result) {
+              case (1) {
+                if (Contains (storage,frozen soda)) {
+                  player.money = player.money - 1
+                  MoveObject (frozen soda, player)
+                  msg ("An enlarged can falls out of the machine. It's a frozen soda.")
+                  loop = 0
+                }
+              }
+              case (2) {
+                if (Contains (storage,wilted flower)) {
+                  player.money = player.money - 1
+                  MoveObject (wilted flower, player)
+                  msg ("A capsule falls out of the machine. It contains a wilted flower.")
+                  loop = 0
+                }
+              }
+              case (3) {
+                if (Contains (storage,unfrozen soda)) {
+                  player.money = player.money - 1
+                  MoveObject (unfrozen soda, player)
+                  msg ("A capsule falls out of the machine. It contains a can of soda, not frozen. That's weird.")
+                  loop = 0
+                }
+              }
+            }
+          }
+        }
+        else {
+          msg ("You're a bit short on cash.")
+        }
+      ]]></use>
+      <give type="scriptdictionary" />
+      <useon type="scriptdictionary" />
+    </object>
+  </object>
+  <object name="Back Hallway">
+    <inherit name="editor_room" />
+    <description><![CDATA[The dim halls are very echoey, and you can hear water dripping.<br/><font size="0.5em">The dim halls are very echoey, and you can hear water dripping.</font><br/>]]></description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <prefix>a</prefix>
+    <beforeenter type="script">
+      stop sound
+      play sound ("footstep.mp3", false, false)
+    </beforeenter>
+    <enter type="script">
+    </enter>
+    <exit alias="east" to="Break Room">
+      <inherit name="eastdirection" />
+      <runscript type="boolean">false</runscript>
+      <script type="script">
+        play sound ("371014__theshuggie__echoing-footsteps-down-hallway.wav", false, false)
+        MoveObject (player, Back Hallway)
+      </script>
+    </exit>
+    <exit alias="south" to="Sales Floor">
+      <inherit name="southdirection" />
+    </exit>
+  </object>
+  <object name="storage">
+    <inherit name="editor_room" />
+    <object name="wilted flower">
+      <inherit name="editor_object" />
+      <look><![CDATA[It's a wilted flower. It looks like it used to be blue, but now it's an extremely dark purple, almost black.<br/>It's warm, must've been decomposing in the vending machine.]]></look>
+      <drop type="boolean">false</drop>
+    </object>
+    <object name="frozen soda">
+      <inherit name="editor_object" />
+      <look><![CDATA[This frozen soda has expanded when it froze. Maybe if you keep it on you it can be consumed.<br/>That would probably take longer than the entire game's length, though.]]></look>
+      <drop type="boolean">false</drop>
+    </object>
+    <object name="unfrozen soda">
+      <inherit name="editor_object" />
+      <look><![CDATA[This unfrozen soda is warm without condensation. What a mystery. <br/>Typically, sodas from that vending machine come out cold. ]]></look>
+      <drop type="boolean">false</drop>
+    </object>
+  </object>
+  <object name="Registers">
+    <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <prefix>the</prefix>
+    <glassBool type="boolean">false</glassBool>
+    <description type="script"><![CDATA[
+      msg ("The registers (aka tills) are where customers go to pay for your items, or go to complain about slow lines, or their personal life. We don't care.")
+      if (magazine.parent = player) {
+        msg ("Benny is working as usual.")
+      }
+      else {
+        msg ("Near register 3, you can see a particularly difficult elderly customer having a row with Benny, the slacking cashier. Or slackshier. That's a cool new word.<br/>You might want to LISTEN to them.")
+      }
+    ]]></description>
+    <exit alias="north" to="Clearance Department">
+      <inherit name="northdirection" />
+    </exit>
+    <object name="magazine">
+      <inherit name="editor_object" />
+      <moneyLocation type="boolean">false</moneyLocation>
+      <take />
+      <drop type="boolean">false</drop>
+      <visible type="boolean">false</visible>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+      </inventoryverbs>
+      <look type="script">
+        if ((not magazine.moneyLocation)) {
+          msg ("This magazine has a $1 instant rebate. It's also a free sample!")
+          player.money = player.money + 1
+          magazine.moneyLocation = true
+        }
+        else {
+          msg ("This offer has since expired.")
+        }
+      </look>
+    </object>
+    <object name="ongoing argument">
+      <inherit name="editor_object" />
+      <alt type="stringlist">
+        <value>Benny</value>
+        <value>customer</value>
+        <value>Gertrude</value>
+      </alt>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Listen to</value>
+      </displayverbs>
+      <look>Yeesh.</look>
+      <feature_usegive />
+      <listen type="script"><![CDATA[
+        msg ("Benny sounds like he's half screeching, and half half-asleep. Like a mixture of a angry banshee and an insomniac in the morning.<br/>\"I told you I can't leave the register!\"<br/>The lady responds angrily.<br/>\"I need you or someone else to search for my glasses! I might have left them in the clearance department or maybe the home decor section! If you don't get going, I'm going to call the manager!\"<br/>Benny looks worried.<br/>\"Look, I can't leave the register because someone might rob the drawer! And if that happens, or if you call the manager, I'll surely be turned into something awful! Please calm down, I beg you!\"<br/>You've heard enough.")
+        Registers.glassBool = true
+      ]]></listen>
+      <give type="scriptdictionary" />
+    </object>
+    <exit alias="west" to="Sales Floor">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="south" to="Mens Department Section">
+      <inherit name="southdirection" />
+    </exit>
+    <exit alias="east" to="Fitting Rooms Section">
+      <inherit name="eastdirection" />
+    </exit>
+  </object>
+  <object name="Clearance Department">
+    <inherit name="editor_room" />
+    <description>One thing that didn't change when Tegrat took control of the store is that the clearance department is dingy and disorganized. There's many products strewn about the isle carelessly, usually damaged.</description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <prefix>the</prefix>
+    <exit alias="south" to="Registers">
+      <inherit name="southdirection" />
+    </exit>
+    <object name="purse">
+      <inherit name="editor_object" />
+      <alt type="stringlist">
+        <value>purse</value>
+      </alt>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Take</value>
+      </displayverbs>
+      <take />
+      <takemsg>You took the purse. It feels light enought to be empty, but there's a rustling when you move it.</takemsg>
+      <moneyLocation type="boolean">false</moneyLocation>
+      <alias>purse with broken clasp</alias>
+      <drop type="boolean">false</drop>
+      <feature_usegive />
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+      </inventoryverbs>
+      <look type="script">
+        if ((not purse.moneyLocation)) {
+          msg ("You open the purse. Inside is $1! This purse looks to be one that you sell, so it should be fine to take...?")
+          player.money = player.money + 1
+          purse.moneyLocation = true
+        }
+        else {
+          msg ("You've looted enough for today from this purse.")
+        }
+      </look>
+    </object>
+    <exit alias="southwest" to="Sales Floor">
+      <inherit name="southwestdirection" />
+    </exit>
+    <exit alias="southeast" to="Fitting Rooms Section">
+      <inherit name="southeastdirection" />
+    </exit>
+  </object>
+  <verb>
+    <property>lookthrough</property>
+    <pattern>look through</pattern>
+    <defaultexpression>"You can't look through " + object.article + "."</defaultexpression>
+  </verb>
+  <object name="Sales Floor">
+    <inherit name="editor_room" />
+    <description>The sales floor is a big part of the store. It's where you can find employees hiding from customers, messy aisles, and customers who think they know everything and who act rich. Yeah, right!</description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <prefix>the</prefix>
+    <exit alias="west" to="Womens Department Section">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="north" to="Back Hallway">
+      <inherit name="northdirection" />
+    </exit>
+    <exit alias="northeast" to="Clearance Department">
+      <inherit name="northeastdirection" />
+    </exit>
+    <exit alias="northwest" to="Home Decor Section">
+      <inherit name="northwestdirection" />
+    </exit>
+    <exit alias="southeast" to="Mens Department Section">
+      <inherit name="southeastdirection" />
+    </exit>
+    <exit alias="east" to="Registers">
+      <inherit name="eastdirection" />
+    </exit>
+  </object>
+  <object name="Mens Department Section">
+    <inherit name="editor_room" />
+    <description>Where guys can find whatever they want. It's usually a complete and utter disaster. WHY?</description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <prefix>the</prefix>
+    <exit alias="northwest" to="Sales Floor">
+      <inherit name="northwestdirection" />
+    </exit>
+    <exit alias="northeast" to="Fitting Rooms Section">
+      <inherit name="northeastdirection" />
+    </exit>
+    <exit alias="north" to="Registers">
+      <inherit name="northdirection" />
+    </exit>
+  </object>
+  <object name="Womens Department Section">
+    <inherit name="editor_room" />
+    <description>This department makes up most of the entire store.</description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <prefix>the</prefix>
+    <exit alias="east" to="Sales Floor">
+      <inherit name="eastdirection" />
+    </exit>
+    <object name="key">
+      <inherit name="editor_object" />
+      <take />
+      <scenery />
+      <takemsg>You put the key in your pocket. </takemsg>
+      <feature_usegive />
+      <attr name="feature_switchable" type="boolean">false</attr>
+      <visible />
+      <look>It looks rusty.</look>
+      <drop type="boolean">false</drop>
+      <use type="script">
+        if (game.pov.parent = Fitting Rooms Section) {
+          UnlockExit (Fitting Door)
+          msg ("You insert the key and try to turn it. The lock is very rusty, and it doesn't turn immidiately. You give it more force and suddenly, the lock turns and the key breaks in half. ")
+          RemoveObject (key)
+        }
+        else {
+          msg ("You can't see anywhere you can use it.")
+        }
+      </use>
+      <selfuseon type="scriptdictionary" />
+    </object>
+    <object name="cleaning supplies">
+      <inherit name="editor_object" />
+      <inherit name="plural" />
+      <look>Next to the paper towels, you notice a {object:key}.</look>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+    </object>
+    <exit alias="north" to="Home Decor Section">
+      <inherit name="northdirection" />
+    </exit>
+  </object>
+  <object name="Fitting Rooms Section">
+    <inherit name="editor_room" />
+    <description>The fitting rooms are to try clothing on and for people who are with their friends that are making the place crowded. It's a bother.</description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <prefix>the</prefix>
+    <enter type="script">
+    </enter>
+    <exit name="Fitting Door" alias="in" to="Fitting Rooms">
+      <inherit name="indirection" />
+      <locked />
+    </exit>
+    <exit alias="southwest" to="Mens Department Section">
+      <inherit name="southwestdirection" />
+    </exit>
+    <exit alias="west" to="Registers">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="northwest" to="Clearance Department">
+      <inherit name="northwestdirection" />
+    </exit>
+  </object>
+  <object name="Fitting Rooms">
+    <inherit name="editor_room" />
+    <isroom />
+    <descprefix>You are in </descprefix>
+    <objectslistprefix>You can see </objectslistprefix>
+    <ifDoorNotOpen />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <prefix>the</prefix>
+    <description type="script">
+    </description>
+    <enter type="script">
+      if (Fitting Rooms.ifDoorNotOpen = true) {
+        Mr Scotts
+      }
+      else {
+        msg ("Mr Scotts is leaning against the wall recovering. The mirror looks like any other mirror. The door from earlier is still open waiting for you to go in. ")
+      }
+    </enter>
+    <beforeenter type="script">
+    </beforeenter>
+    <firstenter type="script">
+    </firstenter>
+    <onexit type="script">
+    </onexit>
+    <object name="mirror">
+      <inherit name="editor_object" />
+      <scenery />
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <look>You go to the mirror. At first, there's only your reflection, but your image is then replaced with that of the {object:Wizard}!</look>
+      <displayverbs type="stringlist">
+        <value>Look at </value>
+      </displayverbs>
+      <inventoryverbs type="stringlist" />
+      <visible />
+    </object>
+    <object name="Wizard">
+      <inherit name="editor_object" />
+      <scenery />
+      <gender type="string"></gender>
+      <displayverbs type="stringlist">
+        <value>Look at </value>
+      </displayverbs>
+      <inventoryverbs type="stringlist" />
+      <visible />
+      <look type="script"><![CDATA[
+        msg ("\"You have 2 choices. Answer my riddle right or be cursed.\"")
+        riddles = NewStringList()
+        list add (riddles, "I am an odd number. Take away a letter and I become even. What number am I?")
+        list add (riddles, "If two’s company, and three’s a crowd, what are four and five?")
+        list add (riddles, "Mary has four daughters, and each of her daughters has a brother. How many children does Mary have?")
+        list add (riddles, "Three doctors said that Bill was their brother. Bill says he has no brothers. How many brothers does Bill actually have?")
+        list add (riddles, "A little girl goes to the store and buys one dozen eggs. As she is going home, all but three break. How many eggs are left unbroken?")
+        list add (riddles, "A man describes his daughters, saying, “They are all blonde, but two; all brunette but two; and all redheaded but two.” How many daughters does he have?")
+        list add (riddles, "If there are three apples and you take away two, how many apples do you have?")
+        answersNumbers = NewStringList()
+        list add (answersNumbers, "7")
+        list add (answersNumbers, "9")
+        list add (answersNumbers, "5")
+        list add (answersNumbers, "0")
+        list add (answersNumbers, "3")
+        list add (answersNumbers, "3")
+        list add (answersNumbers, "2")
+        answersWords = NewStringList()
+        list add (answersWords, "seven")
+        list add (answersWords, "nine")
+        list add (answersWords, "five")
+        list add (answersWords, "zero")
+        list add (answersWords, "three")
+        list add (answersWords, "three")
+        list add (answersWords, "two")
+        k = GetRandomInt (0,6)
+        msg ("<i>" + ListItem(riddles, k) + "</i>")
+        get input {
+          result = lcase(result)
+          msg (result)
+          ansNumCarry = ListItem(answersNumbers, k)
+          ansWorCarry = ListItem(answersWords, k)
+          if (result = ansNumCarry or result = ansWorCarry) {
+            msg ("The Wizard fades in the mirror. You answered correctly. Mr. Scotts regains his normal appearance. Door  number " + ansNumCarry + " opens without help. It looks different inside.")
+            MakeObjectInvisible (mirror)
+            MakeObjectInvisible (Wizard)
+            MakeObjectInvisible (Mens Department Section)
+            UnlockExit (Door)
+            Fitting Rooms.ifDoorNotOpen = false
+          }
+          else {
+            msg ("The Wizard reaches out from the mirror and grabs you. You fully disintegrate within a second.")
+            SetForegroundColour ("Red")
+            msg ("That wasn't the right answer. You are now <b>DEAD</b>.")
+            SetForegroundColour ("Purple")
+            PrintCentered ("CONTINUE FROM LAST CHECKPOINT")
+            SetForegroundColour ("Black")
+            wait {
+              Mr Scotts
+            }
+          }
+        }
+      ]]></look>
+    </object>
+    <exit alias="out" to="Fitting Rooms Section">
+      <inherit name="outdirection" />
+    </exit>
+    <exit name="Door" alias="in" to="Secret Room">
+      <inherit name="indirection" />
+      <locked />
+    </exit>
+  </object>
+  <object name="Secret Room">
+    <inherit name="editor_room" />
+    <description><![CDATA[This room seems to be storage for unsold and damaged/defective items<br/><br/>]]></description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <prefix>the</prefix>
+    <boxBool type="boolean">false</boxBool>
+    <object name="half unwoven sweater">
+      <inherit name="editor_object" />
+      <look><![CDATA[Half sweater. Half 10 meters of string. All smells like mothballs.<br/>]]></look>
+      <takemsg>It completely unravels.</takemsg>
+      <take />
+      <drop type="boolean">false</drop>
+      <ontake type="script">
+        RemoveObject (half unwoven sweater)
+        create ("pile of yarn")
+        AddToInventory (pile of yarn)
+      </ontake>
+    </object>
+    <object name="switch">
+      <inherit name="editor_object" />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Take</value>
+        <value>Use</value>
+      </displayverbs>
+      <feature_usegive />
+      <visible type="boolean">false</visible>
+      <scenery type="boolean">false</scenery>
+      <look>It reminds you of something.</look>
+      <use type="script"><![CDATA[
+        msg ("You think to yourself, \"Could this be the switch Stacy was talking of?\" ")
+        msg ("You flip it and suddenly the lights in the store go out, and you hear loud rumbling in the distance followed by screaming. The sounds stop, the lights come back on, and you hear cheering outside. ")
+        msg ("You walk out and hear Mr Scotts saying to Stacy, \"Are you serious? How did this happen?\"")
+        msg ("\"It's true!\" I saw it when I was giving him his mail!\", Stacy said. She sees you coming out of the room. \"You found the switch I told you aboutf!  You did it!\" ")
+        SetForegroundColour ("Purple")
+        PrintCentered ("<b>They both cheer and you join in. It's been a long time you've been stuck in this place, but things might just turn out alright.</b>")
+        finish
+      ]]></use>
+    </object>
+    <exit alias="out" to="Fitting Rooms">
+      <inherit name="outdirection" />
+    </exit>
+    <object name="button">
+      <inherit name="editor_object" />
+      <feature_usegive />
+      <look>It's not even attached to anything.</look>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Take</value>
+        <value>Use</value>
+      </displayverbs>
+      <take />
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Use</value>
+      </inventoryverbs>
+      <use type="script">
+        msg ("You press it and nothing happens. ")
+      </use>
+    </object>
+    <object name="cardboard box">
+      <inherit name="editor_object" />
+      <takemsg>You can't take it. It's too heavy.</takemsg>
+      <look type="script">
+        msg ("There's writing on it. It reads, \"Can only be opened with two sodas and a flower.\" ")
+        Secret Room.boxBool = true
+      </look>
+      <trytoopen type="script">
+        if (Secret Room.boxBool = false) {
+          msg ("It seems like cardboard, but it's impossible to open. What kind of magic is this?")
+        }
+        else {
+          if (wilted flower.parent = player and frozen soda.parent = player and unfrozen soda.parent = player ) {
+            MakeObjectVisible (switch)
+            msg ("You put the two sodas and the flower on the box. The box soaks them in, and it opens up by itself.")
+            OutputTextNoBr ("Inside, you see a ")
+            OutputTextNoBr ("{object:switch}")
+            msg (".")
+          }
+          else {
+            msg ("You don't have the neccessary items to open this box. ")
+          }
+        }
+      </trytoopen>
+    </object>
+  </object>
+  <object name="Home Decor Section">
+    <inherit name="editor_room" />
+    <description>Where people decorate their homes every second of the day.</description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <prefix>the</prefix>
+    <exit alias="southeast" to="Sales Floor">
+      <inherit name="southeastdirection" />
+    </exit>
+    <object name="glasses">
+      <inherit name="editor_object" />
+      <inherit name="plural" />
+      <look>The perscription lenses are so thick that they are opaque.</look>
+      <feature_usegive />
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Use</value>
+      </inventoryverbs>
+      <take />
+      <takemsg>You should give this back. Looking through these would be a safety hazard.</takemsg>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Take</value>
+        <value>Look through</value>
+      </displayverbs>
+      <attr name="feature_wearable" type="boolean">false</attr>
+      <attr name="wear_layer" type="int">0</attr>
+      <lookthrough>You feel sick and dizzy, and the lights of the store hurt your eyes. You fall down and hit your head. A few hours later, you wake up, and nothing has changed.</lookthrough>
+      <drop type="boolean">false</drop>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <use type="script"><![CDATA[
+        if (Registers.glassBool = false) {
+          msg ("These seem like they belong to someone, but who do they belong to?")
+        }
+        else if (Registers.glassBool = true and game.pov.parent = Registers) {
+          RemoveObject (glasses)
+          msg ("You hand the glasses to the old lady.<br/>\"Thank you so much, young one. I'd offer you a candy, but I lost them at the last store I was at. Let me write you a check, I'm out of pennies.\"<br/>You refuse to take money, not wanting to hold up the line any longer.")
+          MakeObjectVisible (magazine)
+          msg ("\"What about this magazine?\"<br/>You accept and take the magazine.")
+          MoveObject (magazine, player)
+          msg ("\"Say, the clothing isle is a mess. Tell your manager it should be cleaned up, or be a good youngin and do it without being told.\"<br/>She starts to walk out of the store.<br/>16 minutes later, she exits the building.")
+          MakeObjectInvisible (ongoing argument)
+        }
+      ]]></use>
+    </object>
+    <exit alias="south" to="Womens Department Section">
+      <inherit name="southdirection" />
+    </exit>
+  </object>
+  <verb>
+    <property>trytoopen</property>
+    <pattern>try to open</pattern>
+    <defaultexpression>"You can't try to open " + object.article + "."</defaultexpression>
+  </verb>
+  <function name="Counter" type="int">
+    vendcounter = 0
+  </function>
+  <function name="Mr Scotts">
+    msg ("In the room, you see your co-worker, Mr. Scotts.")
+    msg ("\"Have you had any trouble with customers lately?\"")
+    get input {
+      if (lcase(result) = "yes") {
+        msg ("\"Yes,\" you say.")
+        msg ("\"Me too. I had some lady yelling at me because we ran out of fake plants.\"")
+      }
+      else if (lcase(result) = "no") {
+        msg ("\"No,\" you say.")
+        msg ("\"Yeah. I'm glad I'm able to cancel transactions I messed up or I would have more customers yelling at me.\"")
+      }
+      else {
+        msg ("\"Ipsum dolor sit amet, consectetur adipiscing elit.\"")
+      }
+      get input {
+        msg ("You say, \"" + result + "\"")
+        msg ("Mr. Scotts stops responding and stares at you blankly. ")
+        get input {
+          msg ("You say, \"" + result + "\"")
+          msg ("Once again, he doesn't reply.")
+          msg ("You look closer and notice his face is devoid of expression, his mouth slightly open and too relaxed, and his eyes which consist of colorless swirls.")
+          msg ("You suspect your colleague is hypnotized!")
+          msg ("Mr. Scotts looks at you and says, \"You should take a look at this. I saw something weird in the {object:mirror}.\"")
+        }
+      }
+    }
+  </function>
+  <timer name="Water Timer">
+    <interval>5</interval>
+    <enabled />
+    <script>
+      if (game.pov.parent = Back Hallway) {
+        play sound ("water drip.mp3", false, false)
+      }
+    </script>
+  </timer>
+</asl>
